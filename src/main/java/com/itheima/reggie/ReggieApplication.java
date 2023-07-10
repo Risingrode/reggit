@@ -8,15 +8,15 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * @author LJM
- * @create 2022/4/14
+ * @author 付昌威
+ * @create 2027/7/4
  */
 
 @Slf4j
-@SpringBootApplication
-@ServletComponentScan
-@EnableTransactionManagement
-@EnableCaching
+@SpringBootApplication //启动类注解
+@ServletComponentScan //扫描Servlet组件
+@EnableTransactionManagement //开启事务管理
+@EnableCaching //开启缓存
 public class ReggieApplication {
     public static void main(String[] args) {
         SpringApplication.run(ReggieApplication.class,args);

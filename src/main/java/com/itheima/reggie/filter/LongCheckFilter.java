@@ -13,16 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @author LJM
- * @create 2022/4/15
+ * @author 付昌威
+ * @create 2023/7/4
  * 检查用户是否已经完成登陆
  * filterName过滤器名字
  * urlPatterns拦截的请求，这里是拦截所有的请求
  *
  */
 
-@WebFilter(filterName = "LongCheckFilter",urlPatterns = "/*")
 @Slf4j
+@WebFilter(filterName = "LongCheckFilter",urlPatterns = "/*")
 public class LongCheckFilter implements Filter {
 
     //路径匹配器，支持通配符
@@ -80,24 +80,17 @@ public class LongCheckFilter implements Filter {
             //把用户id存储到本地的threadLocal
             Long userId = (Long) request.getSession().getAttribute("user");
             BaseContext.setCurrentId(userId);
-
             filterChain.doFilter(request,response);
             return;
         }
 
         log.info("用户未登录");
         // 5、如果未登录则返回未登录结果，通过输出流方式向客户端页面响应数据,具体响应什么数据，看前端的需求，然后前端会根据登陆状态做页面跳转
+        // write() :把数据写入到前端响应中
         response.getWriter().write(JSON.toJSONString(R.error("NOT LOGIN")));
 
         return ;
     }
-
-    /**
-     * 路径匹配，检查本次请求是否需要放行
-     * @param urls
-     * @param requestURI
-     * @return
-     */
 
     public boolean check(String[] urls,String requestURI){
         for (String url : urls) {

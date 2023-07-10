@@ -6,38 +6,32 @@ import java.util.Random;
  * 随机生成验证码工具类
  */
 public class ValidateCodeUtils {
-    /**
-     * 随机生成验证码
-     * @param length 长度为4位或者6位
-     * @return
-     */
-    public static Integer generateValidateCode(int length){
-        Integer code =null;
-        if(length == 4){
+    //生成指定长度数字验证码
+    public static Integer generateValidateCode(int length) {
+        Integer code = null;
+        if (length == 4) {
             code = new Random().nextInt(9999);//生成随机数，最大为9999
-            if(code < 1000){
+            if (code < 1000) {
                 code = code + 1000;//保证随机数为4位数字
             }
-        }else if(length == 6){
+        } else if (length == 6) {
             code = new Random().nextInt(999999);//生成随机数，最大为999999
-            if(code < 100000){
+            if (code < 100000) {
                 code = code + 100000;//保证随机数为6位数字
             }
-        }else{
+        } else {
             throw new RuntimeException("只能生成4位或6位数字验证码");
         }
         return code;
     }
 
-    /**
-     * 随机生成指定长度字符串验证码
-     * @param length 长度
-     * @return
-     */
-    public static String generateValidateCode4String(int length){
-        Random rdm = new Random();
-        String hash1 = Integer.toHexString(rdm.nextInt());
-        String capstr = hash1.substring(0, length);
-        return capstr;
+    //随机生成指定长度字符串验证码
+
+    public static String generateValidateCode4String(int length) {
+        Random rdm = new Random(); // 创建随机数生成器对象
+        String hash1 = Integer.toHexString(rdm.nextInt()); // 生成一个随机整数，并将其转换为十六进制字符串
+        String capstr = hash1.substring(0, length); // 截取生成的随机字符串的前 length 个字符作为验证码
+        return capstr; // 返回生成的验证码
     }
+
 }
