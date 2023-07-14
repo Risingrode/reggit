@@ -15,7 +15,14 @@ spring:
     port: 6379
     #使用本地的windows不用密码也可以
     password: 123456
-    database: 1
+    database: 0
+    jedis:
+      pool:
+        max-active: 8 # 最大连接数
+        max-wait: 1ms # 连接池最大阻塞时间
+        max-idle: 4 # 连接池最大空闲连接
+        min-idle: 0 # 连接池最小空闲时间
+
   cache:
     redis:
       time-to-live: 1800000 #设置缓存数据的过期时间,这里的单位是毫秒,可以设置也可以不设置

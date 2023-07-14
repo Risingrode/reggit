@@ -16,6 +16,8 @@ public class JedisTest {
         // 输入密码
         jedis.auth("123456");
 
+
+
         jedis.set("username","xiaoming");
 
         String value=jedis.get("username");

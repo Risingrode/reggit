@@ -117,7 +117,8 @@ localhost:6379> keys *
 
 # 在java中操作redis
 
-
+数据库总共有16个
+- select 1   切换到1号数据库
 
 
 
