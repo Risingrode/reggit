@@ -264,7 +264,7 @@ public class DishController {
         List<Dish> list = dishService.list(queryWrapper);
 
         //进行集合的泛型转化
-            dishDtoList = list.stream().map((item) ->{
+        dishDtoList = list.stream().map((item) ->{
             DishDto dishDto = new DishDto();
             //为一个新的对象赋值，一定要考虑你为它赋过几个值，否则你自己都不知道就返回了null的数据
             //为dishDto对象的基本属性拷贝
