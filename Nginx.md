@@ -1,7 +1,7 @@
 # Nginx
 
 ## 介绍
-Nginx（发音为"engine x"）是一个开源的、高性能的HTTP服务器和反向代理服务器。Nginx也可以作为一个IMAP/POP3/SMTP代理服务器。由于其稳定性、丰富的模块库、简洁的配置和低资源消耗，Nginx在全球范围内广受欢迎。
+Nginx是一个开源的、高性能的HTTP服务器和反向代理服务器。Nginx也可以作为一个IMAP/POP3/SMTP代理服务器。由于其稳定性、丰富的模块库、简洁的配置和低资源消耗，Nginx在全球范围内广受欢迎。
 
 以下是Nginx的一些主要特性：
 
@@ -96,11 +96,12 @@ server{
     listen 82;
     server_name localhost;
     location/{
+        rewrite ^/(.*)$ /$1 break;
         proxy_pass http://192.168.138.101:8080; # 反向代理设置，把请求转发到指定服务
     }
 }
 ```
-
+- rewrite ^/(.*)$ /$1 break; 重写url，去掉前面的/，否则会报404错误
 ## 负载均衡
 
 - 应用集群：把同一个应用部署到多台服务器上面，组成集群，接收负载均衡器分发的请求

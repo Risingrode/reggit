@@ -46,8 +46,13 @@ public class LongCheckFilter implements Filter {
                 "/common/**",
                 "/user/sendMsg",
                 //移动端发送短信
-                "/user/login"
+                "/user/login",
                 // 移动端登陆
+                "/doc.html",
+                "/webjars/**",
+                "/swagger-resources/**",
+                "/v2/api-docs",
+
         };
 
         //做调试用的
