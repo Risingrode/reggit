@@ -63,10 +63,8 @@ public class CategoryController {
      */
     @DeleteMapping
     public R<String> delete(@RequestParam("ids") Long id){ //注意这里前端传过来的数据是ids
-
         categoryService.remove(id);
         return R.success("分类信息删除成功");
-
     }
 
 

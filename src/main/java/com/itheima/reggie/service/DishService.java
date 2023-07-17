@@ -6,10 +6,6 @@ import com.itheima.reggie.entity.Dish;
 
 import java.util.List;
 
-/**
- * @author LJM
- * @create 2022/4/16
- */
 public interface DishService extends IService<Dish> {
 
     //新增菜品,同时插入菜品对应的口味数据,需要同时操作两张表:dish  dish_flavor
