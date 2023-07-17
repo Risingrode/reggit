@@ -19,7 +19,7 @@ public class R<T> implements Serializable {
     private T data;
     //动态数据
     private Map map = new HashMap();
-    // 为什么使用static 声明方法
+    //为什么使用static 声明方法
     //意味着该方法属于类级别，意味着无需创建类的实例就可以直接调用该方法。因此，static 方法可以在类的任何地方被调用，而不依赖于对象的创建。
 
     public static <T> R<T> success(T object) {
@@ -29,8 +29,9 @@ public class R<T> implements Serializable {
         return r;
     }
 
+    //第一个<T>：表示在方法签名中声明了一个泛型类型参数 T。这个类型参数可以在方法体内部使用，用于表示一个具体的类型。
+    //R<T>：表示返回类型为 R<T>，其中 R 是一个泛型类，泛型参数为 T。这意味着返回的对象的类型将与传入的参数的类型相对应。
     public static <T> R<T> error(String msg) {
-        // 第一个 <T> 是方法的类型参数，第二个 <T> 是类的类型参数。
         R r = new R();
         r.msg = msg;
         r.code = 0;

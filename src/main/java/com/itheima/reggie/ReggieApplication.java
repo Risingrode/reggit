@@ -7,11 +7,6 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * @author 付昌威
- * @create 2027/7/4
- */
-
 @Slf4j
 @SpringBootApplication //启动类注解
 @ServletComponentScan //扫描Servlet组件
