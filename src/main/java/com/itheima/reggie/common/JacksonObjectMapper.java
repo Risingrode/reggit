@@ -37,7 +37,8 @@ public class JacksonObjectMapper extends ObjectMapper {
 
         //反序列化时，属性不存在的兼容处理
         this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
+        //addSerializer() 用于定义 Java 对象到 JSON 数据的转换规则
+        //addDeserializer() 用于定义 JSON 数据到 Java 对象的转换规则。
         SimpleModule simpleModule = new SimpleModule()
                 .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
                 .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
