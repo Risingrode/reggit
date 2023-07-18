@@ -13,19 +13,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
+// @WebFilter 注解，该过滤器将被自动注册到应用程序中，可以在其他地方引用过滤器，并根据指定的 URL 模式拦截相应的请求。
 @WebFilter(filterName = "LongCheckFilter",urlPatterns = "/*")
 public class LongCheckFilter implements Filter {
 
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     @Override
+    // filterChain：过滤器链，用于将请求传递给下一个过滤器或目标资源进行处理。
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
         String requestURL = request.getRequestURI();
-
         String[] urls = new String[]{
                 "/employee/login",
                 "/employee/logout",
