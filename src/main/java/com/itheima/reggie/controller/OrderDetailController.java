@@ -5,17 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author LJM
- * @create 2022/4/19
- */
+
 @RestController
 @RequestMapping("/orderDetail")
 public class OrderDetailController {
 
     @Autowired
     private OrderDetailService orderDetailService;
-
-
 
 }

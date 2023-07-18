@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * @author LJM
- * @create 2022/4/18
- */
 @RestController
 @RequestMapping("/shoppingCart")
 public class ShoppingCartController {
@@ -24,45 +20,31 @@ public class ShoppingCartController {
     @Autowired
     private ShoppingCartService shoppingCartService;
 
-    /**
-     * 添加购物车
-     * @param shoppingCart
-     * @return
-     */
+    // 添加购物车
     @PostMapping("/add")
-    public R<ShoppingCart> add(@RequestBody ShoppingCart shoppingCart){
-
-        //先设置用户id,指定当前是哪个用户的购物车数据  因为前端没有传这个id给我们,但是这个id又非常重要（数据库这个字段不能为null）,
-        // 所以要想办法获取到,我们在用户登录的时候就已经保存了用户的id
+    public R<ShoppingCart> add(@RequestBody ShoppingCart shoppingCart) {
+        // 拿到当前用户的id
         Long currentId = BaseContext.getCurrentId();
         shoppingCart.setUserId(currentId);
-
         Long dishId = shoppingCart.getDishId();
-
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShoppingCart::getUserId,currentId);
-
-        if (dishId != null){
-            //添加到购物车的是菜品
-            queryWrapper.eq(ShoppingCart::getDishId,dishId);
-        }else {
-            //添加到购物车的是套餐
-            queryWrapper.eq(ShoppingCart::getSetmealId,shoppingCart.getSetmealId());
+        queryWrapper.eq(ShoppingCart::getUserId, currentId);
+        if (dishId != null) {// 菜品
+            queryWrapper.eq(ShoppingCart::getDishId, dishId);
+        } else {// 菜单
+            queryWrapper.eq(ShoppingCart::getSetmealId, shoppingCart.getSetmealId());
         }
-
-        //查询当前菜品是否或者是套餐是否在购物车中
-        //SQL:select * from shopping_cart where user_id = ? and dish_id/setmeal_id = ?
+        //查询当前菜品或者套餐是否在购物车中
         ShoppingCart cartServiceOne = shoppingCartService.getOne(queryWrapper);
-
         if (cartServiceOne != null) {
-            //如果已经存在,就在原来的数量基础上加一
+            // 如果已经存在,就在原来的数量基础上加一
             Integer number = cartServiceOne.getNumber();
-            cartServiceOne.setNumber(number+1);
+            // 对对象进行操作
+            cartServiceOne.setNumber(number + 1);
+            // 对数据库进行操作
             shoppingCartService.updateById(cartServiceOne);
-        }else {
-            //如果不存在,则添加到购物车，数量默认是1
+        } else {
             shoppingCart.setNumber(1);
-            //入库单时候为创建时间的字段进行赋值
             shoppingCart.setCreateTime(LocalDateTime.now());
             shoppingCartService.save(shoppingCart);
             cartServiceOne = shoppingCart;
@@ -70,85 +52,63 @@ public class ShoppingCartController {
         return R.success(cartServiceOne);
     }
 
-    /**
-     * 查看购物车
-     * @return
-     * 前端没有传数据给我们，这里就不用接收了
-     */
+    // 查看购物车
     @GetMapping("list")
-    public R<List<ShoppingCart>> list(){
+    public R<List<ShoppingCart>> list() {
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
+        queryWrapper.eq(ShoppingCart::getUserId, BaseContext.getCurrentId());
         queryWrapper.orderByAsc(ShoppingCart::getCreateTime);
         List<ShoppingCart> list = shoppingCartService.list(queryWrapper);
-
         return R.success(list);
     }
 
-    /**
-     * 清空购物车
-     * @return
-     */
+    // 清空购物车
     @DeleteMapping("/clean")
-    public R<String> clean(){
+    public R<String> clean() {
         shoppingCartService.clean();
         return R.success("清空购物车成功");
     }
 
-    /**
-     * 客户端的套餐或者是菜品数量减少设置
-     * 没必要设置返回值
-     * @param shoppingCart
-     */
-    @PostMapping("/sub")
+    // 客户端的套餐或者是菜品数量减少设置，没必要设置返回值
+    // 当调用该方法时，会启动一个事务，并在方法执行结束时根据方法的执行结果决定是提交事务还是回滚事务。
     @Transactional
-    public R<ShoppingCart> sub(@RequestBody ShoppingCart shoppingCart){
-
+    @PostMapping("/sub")
+    public R<ShoppingCart> sub(@RequestBody ShoppingCart shoppingCart) {
         Long dishId = shoppingCart.getDishId();
+        // 菜品
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-
-        //代表数量减少的是菜品数量
-        if (dishId != null){
-            //通过dishId查出购物车对象
-            queryWrapper.eq(ShoppingCart::getDishId,dishId);
-            //这里必须要加两个条件，否则会出现用户互相修改对方与自己购物车中相同套餐或者是菜品的数量
-            queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
+        if (dishId != null) {
+            queryWrapper.eq(ShoppingCart::getDishId, dishId);
+            queryWrapper.eq(ShoppingCart::getUserId, BaseContext.getCurrentId());
             ShoppingCart cart1 = shoppingCartService.getOne(queryWrapper);
-            cart1.setNumber(cart1.getNumber()-1);
+            cart1.setNumber(cart1.getNumber() - 1);
             Integer LatestNumber = cart1.getNumber();
-            if (LatestNumber > 0){
-                //对数据进行更新操作
+            if (LatestNumber > 0) {
                 shoppingCartService.updateById(cart1);
-            }else if(LatestNumber == 0){
-                //如果购物车的菜品数量减为0，那么就把菜品从购物车删除
+            } else if (LatestNumber == 0) {
                 shoppingCartService.removeById(cart1.getId());
-            }else if (LatestNumber < 0){
+            } else if (LatestNumber < 0) {
                 return R.error("操作异常");
             }
-
             return R.success(cart1);
         }
-
+        // 套餐
         Long setmealId = shoppingCart.getSetmealId();
-        if (setmealId != null){
-            //代表是套餐数量减少
-            queryWrapper.eq(ShoppingCart::getSetmealId,setmealId).eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
+        if (setmealId != null) {
+            queryWrapper.eq(ShoppingCart::getSetmealId, setmealId).eq(ShoppingCart::getUserId, BaseContext.getCurrentId());
             ShoppingCart cart2 = shoppingCartService.getOne(queryWrapper);
-            cart2.setNumber(cart2.getNumber()-1);
+            cart2.setNumber(cart2.getNumber() - 1);
             Integer LatestNumber = cart2.getNumber();
-            if (LatestNumber > 0){
-                //对数据进行更新操作
+            if (LatestNumber > 0) {
                 shoppingCartService.updateById(cart2);
-            }else if(LatestNumber == 0){
-                //如果购物车的套餐数量减为0，那么就把套餐从购物车删除
+            } else if (LatestNumber == 0) {
                 shoppingCartService.removeById(cart2.getId());
-            }else if (LatestNumber < 0){
+            } else if (LatestNumber < 0) {
                 return R.error("操作异常");
             }
             return R.success(cart2);
         }
-            //如果两个大if判断都进不去
-            return R.error("操作异常");
+        //如果两个大if判断都进不去
+        return R.error("操作异常");
     }
-
 }

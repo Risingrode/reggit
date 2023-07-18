@@ -78,7 +78,7 @@ public class OrderController {
             orderDto.setOrderDetails(orderDetailList);
             return orderDto;
         }).collect(Collectors.toList());
-        //使用dto的分页有点难度
+        // TODO : 使用dto的分页有点难度
         BeanUtils.copyProperties(pageInfo,pageDto,"records");
         pageDto.setRecords(orderDtoList);
         return R.success(pageDto);
@@ -86,69 +86,49 @@ public class OrderController {
 
     // 后台查询订单明细
     @GetMapping("/page")
+    //  number：表示订单号的关键字，用于模糊查询订单号
     public R<Page> page(int page, int pageSize, String number,String beginTime,String endTime){
-        //分页构造器对象
         Page<Orders> pageInfo = new Page<>(page,pageSize);
-        //构造条件查询对象
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
-
-        //添加动态查询条件
+        // 使用 gt() 方法构造大于筛选条件,使用 lt() 方法构造小于筛选条件
         queryWrapper.like(number!=null,Orders::getNumber,number)
                 .gt(StringUtils.isNotEmpty(beginTime),Orders::getOrderTime,beginTime)
                 .lt(StringUtils.isNotEmpty(endTime),Orders::getOrderTime,endTime);
-
         orderService.page(pageInfo,queryWrapper);
         return R.success(pageInfo);
     }
 
-
-    /**客户端  再来一单功能
-     * 前端点击再来一单是直接跳转到购物车的，所以为了避免数据有问题，再跳转之前我们需要把购物车的数据给清除
-     * ①通过orderId获取订单明细
-     * ②把订单明细的数据的数据塞到购物车表中，不过在此之前要先把购物车表中的数据给清除(清除的是当前登录用户的购物车表中的数据)，
-     * 不然就会导致再来一单的数据有问题；
-     * (这样可能会影响用户体验，但是对于外卖来说，用户体验的影响不是很大，电商项目就不能这么干了)
-     */
+    // 再来一单功能
+    // TODO : 逻辑不够清晰
     @PostMapping("/again")
     public R<String> againSubmit(@RequestBody Map<String,String> map){
         String ids = map.get("id");
-
         long id = Long.parseLong(ids);
-
-        //通过用户id把原来的购物车给清空，这里的clean方法是视频中讲过的,建议抽取到service中,那么这里就可以直接调用了
+        // 通过用户id把原来的购物车给清空
         shoppingCartService.clean();
-
         LambdaQueryWrapper<OrderDetail> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderDetail::getOrderId,id);
         //获取该订单对应的所有的订单明细表
         List<OrderDetail> orderDetailList = orderDetailService.list(queryWrapper);
-
         List<ShoppingCart> shoppingCartList = orderService.againAdd(orderDetailList);
-
-        //把携带数据的购物车批量插入购物车表  这个批量保存的方法要使用熟练！！！
+        //把携带数据的购物车批量插入购物车表
         shoppingCartService.saveBatch(shoppingCartList);
-
         return R.success("操作成功");
     }
 
-
+    // 修改订单状态
     @PutMapping
     public R<String> orderStatusChange(@RequestBody Map<String,String> map){
-
         String id = map.get("id");
         Long orderId = Long.parseLong(id);
         Integer status = Integer.parseInt(map.get("status"));
-
         if(orderId == null || status==null){
             return R.error("传入信息不合法");
         }
+        // 对一个对象操作，操作完后，再更新到数据库中
         Orders orders = orderService.getById(orderId);
         orders.setStatus(status);
         orderService.updateById(orders);
-
         return R.success("订单状态修改成功");
-
     }
-
-
 }
