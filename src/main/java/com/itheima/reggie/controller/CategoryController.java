@@ -50,6 +50,9 @@ public class CategoryController {
     }
 
     // 根据id修改分类
+    // @RestController 注解不包含 @RequestBody 注解。
+    // @RequestBody 注解用于将请求体中的数据映射到方法的参数上
+    // @ResponseBody 注解用于将方法的返回值，转换为 JSON 格式的响应数据。
     @PutMapping
     public R<String> update(@RequestBody Category category) {
         categoryService.updateById(category);

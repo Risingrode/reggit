@@ -36,7 +36,6 @@ mybatis-plus:
     global-config:
         db-config:
             id-type: ASSIGN_ID
-
-## TODO:这里不太理解
+# 设置用户上传文件的储存路径
 reggie:
-    path: D:\QQ\项目\IDEA项目
+    path: D:\\QQ\\项目\\IDEA项目\\
