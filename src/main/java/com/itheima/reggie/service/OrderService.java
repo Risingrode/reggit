@@ -9,10 +9,7 @@ import java.util.List;
 
 public interface OrderService extends IService<Orders> {
 
-    /**
-     * 用户下单
-     * @param orders
-     */
+    // 用户下单
     public void submit(Orders orders);
 
     List<ShoppingCart> againAdd(List<OrderDetail> orderDetailList);

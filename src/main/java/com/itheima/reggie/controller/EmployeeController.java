@@ -15,137 +15,70 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
-/**
- * @author LJM
- * @create 2022/4/15
- */
-
-
-@RestController
 @Slf4j
+@RestController
 @RequestMapping("/employee")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping("/login") //使用restful风格开发
+    @PostMapping("/login")
+    // HttpServletRequest : 用于接收前端的请求
+    // 比如：前端传递的数据，前端传递的请求头，前端传递的cookie，客户端的IP地址，User-Agent，Session等等
     public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {//接收前端的json数据,这个json数据是在请求体中的
-
         String password = employee.getPassword();
-        password = DigestUtils.md5DigestAsHex(password.getBytes());//对用户密码进行加密
-
-        //2、根据页面提交的用户名username查询数据库
+        // 字符串进行MD5加密并返回十六进制字符串表示
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
-        // 意思是构建一个等于条件
         queryWrapper.eq(Employee::getUsername, employee.getUsername());
-        //在设计数据库的时候我们对username使用了唯一索引,所以这里可以使用getOne方法
         Employee emp = employeeService.getOne(queryWrapper);
-
-        //3、如果没有查询到则返回登录失败结果
         if (emp == null) {
             return R.error("用户不存在");
         }
-
-        //4、密码比对，如果不一致则返回登录失败结果
         if (!emp.getPassword().equals(password)) {
-            //emp.getPassword()用户存在后从数据库查询到的密码(加密状态的)  password是前端用户自己输入的密码(已经加密处理)
             return R.error("密码不正确");
         }
-
-        //5、查看员工状态，如果为已禁用状态，则返回员工已禁用结果
         if (emp.getStatus() == 0) {
             return R.error("账号已禁用");
         }
-
-        //6、登录成功，将员工id存入Session并返回登录成功结果
+        // session 建立在服务器中
         request.getSession().setAttribute("employee", emp.getId());
-        //把从数据库中查询到的用户返回出去
         return R.success(emp);
     }
 
-
-    /**
-     * 退出功能
-     * ①在controller中创建对应的处理方法来接受前端的请求，请求方式为post；
-     * ②清理session中的用户id
-     * ③返回结果（前端页面会进行跳转到登录页面）
-     *
-     * @return
-     */
-
+    // 退出功能
     @PostMapping("/logout")
     public R<String> logout(HttpServletRequest request) {
-        //清理session中的用户id
         request.getSession().removeAttribute("employee");
-
         return R.success("退出成功");
     }
 
-    /**
-     * 新增员工
-     *
-     * @param employee
-     * @return
-     */
-
-    @PostMapping()//因为请求就是 /employee 在类上已经写了，所以咱俩不用再写了
+    // 新增员工
+    @PostMapping()
     public R<String> save(HttpServletRequest request, @RequestBody Employee employee) {
-
-        //对新增的员工设置初始化密码123456,需要进行md5加密处理，后续员工可以直接修改密码
+        // 对新增的员工设置初始化密码123456
+        // 为什么把密码转化成字节流？ MD5通常接受字节数组作为输入进行计算
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
-        //employee.setCreateTime(LocalDateTime.now());
-        //employee.setUpdateTime(LocalDateTime.now());
-        //获得当前登录用户的id
-        //Long empId = (Long) request.getSession().getAttribute("employee");
-        //employee.setCreateUser(empId); //创建人的id,就是当前用户的id（在进行添加操作的id）
-        //employee.setUpdateUser(empId);//最后的更新人是谁
-        //mybatis提供的新增方法
-
         employeeService.save(employee);
         return R.success("新增员工成功");
     }
 
-    /**
-     * 员工信息分页
-     *
-     * @param page     当前页数
-     * @param pageSize 当前页最多存放数据条数,就是这一页查几条数据
-     * @param name     根据name查询员工的信息
-     * @return
-     */
-
+    // 员工信息分页
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize, String name) {
-        //这里之所以是返回page对象(mybatis-plus的page对象)，是因为前端需要这些分页的数据(比如当前页，总页数)
-        //在编写前先测试一下前端传过来的分页数据有没有被我们接受到
-        log.info("page = {},pageSize = {},name = {}", page, pageSize, name);
-
-        //构造分页构造器  就是page对象
         Page pageInfo = new Page(page, pageSize);
-
-        //构造条件构造器  就是动态的封装前端传过来的过滤条件  记得加泛型
-        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
-        //根据条件查询  注意这里的条件是不为空
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name);
-        //添加一个排序条件
         queryWrapper.orderByDesc(Employee::getUpdateTime);
-        //执行查询  这里不用封装了mybatis-plus帮我们做好了
+        // 调用下面方法，查询结果会被填充到 pageInfo 对象中。
         employeeService.page(pageInfo, queryWrapper);
         return R.success(pageInfo);
     }
 
-
-    /**
-     * 根据id修改员工信息
-     *
-     * @param employee
-     * @return
-     */
+    // 根据id修改员工信息
     @PutMapping
     public R<String> update(HttpServletRequest request, @RequestBody Employee employee) {
-        log.info(employee.toString());
-        // 当期更新者的id
         Long empId = (Long) request.getSession().getAttribute("employee");
         employee.setUpdateTime(LocalDateTime.now());
         employee.setUpdateUser(empId);
@@ -153,16 +86,9 @@ public class EmployeeController {
         return R.success("员工信息修改成功");
     }
 
-    /**
-     * 根据前端传过来的员工id查询数据库进行数据会显给前端
-     *
-     * @param id
-     * @return
-     */
-
+    // 根据id查询员工
     @GetMapping("/{id}")
     public R<Employee> getById(@PathVariable Long id) {
-        // 这里是指对数据库进行操作，所以要调用service层的方法
         Employee employee = employeeService.getById(id);
         if (employee != null) {
             return R.success(employee);

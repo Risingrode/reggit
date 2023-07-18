@@ -6,9 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-/**
- * 订单明细
- */
+// 订单明细
 @Data
 public class OrderDetail implements Serializable {
 

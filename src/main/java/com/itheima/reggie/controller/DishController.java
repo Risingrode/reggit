@@ -110,11 +110,7 @@ public class DishController {
     // 菜品批量删除和单个删除
     // 1.判断要删除的菜品在不在售卖的套餐中，如果在那不能删除
     // 2.要先判断要删除的菜品是否在售卖，如果在售卖也不能删除
-
-    //遇到一个小问题，添加菜品后，然后再添加套餐，但是套餐可选择添加的菜品选项是没有刚刚添加的菜品的？
-    //原因：redis存储的数据没有过期，不知道为什么redis没有重新刷新缓存
-    // （与下面的@GetMapping("/list")中的缓存设置有关，目前不知道咋配置。。。。。
-    // 解决方案，把redis中的数据手动的重新加载一遍，或者是等待过期时间，或者改造成使用spring catch
+    // 3.如果要删除的菜品没有在售卖的套餐中，也没有在售卖，那么就可以删除
     @DeleteMapping
     public R<String> delete(@RequestParam("ids") List<Long> ids) {
         LambdaQueryWrapper<SetmealDish> setmealDishLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -169,23 +165,14 @@ public class DishController {
         }
 
         //如果不存在，直接查询数据库,并且将查询到的菜品数据缓存到redis中
-
-        //这里可以传categoryId,但是为了代码通用性更强,这里直接使用dish类来接受（因为dish里面是有categoryId的）,以后传dish的其他属性这里也可以使用
-        //构造查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
-        //添加条件，查询状态为1（起售状态）的菜品
         queryWrapper.eq(Dish::getStatus, 1);
-
-        //添加排序条件
         queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
         List<Dish> list = dishService.list(queryWrapper);
-
-        //进行集合的泛型转化
+        // 进行集合的泛型转化 将一个集合中的元素类型转换为另一种类型
         dishDtoList = list.stream().map((item) -> {
             DishDto dishDto = new DishDto();
-            //为一个新的对象赋值，一定要考虑你为它赋过几个值，否则你自己都不知道就返回了null的数据
-            //为dishDto对象的基本属性拷贝
             BeanUtils.copyProperties(item, dishDto);
             Long categoryId = item.getCategoryId();
             Category category = categoryService.getById(categoryId);
@@ -193,43 +180,34 @@ public class DishController {
                 String categoryName = category.getName();
                 dishDto.setCategoryName(categoryName);
             }
-            //为dishdto赋值flavors属性
-            //当前菜品的id
             Long dishId = item.getId();
-            //创建条件查询对象
-            LambdaQueryWrapper<DishFlavor> lambdaQueryWrapper = new LambdaQueryWrapper();
+            LambdaQueryWrapper<DishFlavor> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            // select * from dish_flavor where dish_id = ?
             lambdaQueryWrapper.eq(DishFlavor::getDishId, dishId);
-            //select * from dish_flavor where dish_id = ?
-            //这里之所以使用list来条件查询那是因为同一个dish_id 可以查出不同的口味出来,就是查询的结果不止一个
             List<DishFlavor> dishFlavorList = dishFlavorService.list(lambdaQueryWrapper);
             dishDto.setFlavors(dishFlavorList);
-
+            // 返回给流操作的收集器，即 collect(Collectors.toList())。
             return dishDto;
         }).collect(Collectors.toList());
-
         //将查询到的菜品数据缓存到redis中   设置过期时间60分钟
         redisTemplate.opsForValue().set(key, dishDtoList, 60, TimeUnit.MINUTES);
-
         return R.success(dishDtoList);
     }
 
-
-    // 对菜品批量或者是单个 进行停售或者是起售
+    // 修改菜品售卖状态
     @PostMapping("/status/{status}")
     //这个参数这里一定记得加注解才能获取到参数，否则这里非常容易出问题
     public R<String> status(@PathVariable("status") Integer status, @RequestParam List<Long> ids) {
-        //log.info("status:{}",status);
-        //log.info("ids:{}",ids);
-        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        // ids != null: 这是一个条件判断，用于判断传入的菜品ID列表是否为null。如果为null，则不执行in方法。
         queryWrapper.in(ids != null, Dish::getId, ids);
         List<Dish> list = dishService.list(queryWrapper);
         for (Dish dish : list) {
             if (dish != null) {
-                dish.setStatus(status);
-                dishService.updateById(dish);
+                dish.setStatus(status);//设置菜品的售卖状态为指定的状态
+                dishService.updateById(dish);//更新菜品的售卖状态
             }
         }
         return R.success("售卖状态修改成功");
     }
-
 }

@@ -7,14 +7,10 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * @author LJM
- * @create 2022/5/3
- */
+// 订单细节
 @Data
 public class OrderDto extends Orders  {
 
    private List<OrderDetail> orderDetails;
-
 
 }

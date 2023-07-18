@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
+@Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implements OrderService {
 
     @Autowired
@@ -37,10 +37,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Autowired
     OrderDetailService orderDetailService;
 
-    /**
-     * 用户下单
-     * @param orders
-     */
+    // 用户下单
     @Override
     @Transactional
     public void submit(Orders orders) {
@@ -62,10 +59,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         if (addressBook==null){
             throw new CustomException("地址信息有误,不能下单");
         }
-
         Long orderId = IdWorker.getId();//使用工具生成订单号
         orders.setId(orderId);
-
         //进行购物车的金额数据计算 顺便把订单明细给计算出来
         AtomicInteger amount = new AtomicInteger(0);//使用原子类来保存计算的金额结果
         //这个item是集合中的每一个shoppingCarts对象,是在变化的
@@ -83,13 +78,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             //addAndGet进行累加 item.getAmount()单份的金额  multiply乘  item.getNumber()份数
             amount.addAndGet(item.getAmount().multiply(new BigDecimal(item.getNumber())).intValue());
             return orderDetail;
-
         }).collect(Collectors.toList());
-
         //orders.setOrderDetails(orderDetails);
-
         //向订单插入数据,一条数据  因为前端传过来的数据太少了,所以我们需要对相关的属性进行填值
-
         orders.setOrderTime(LocalDateTime.now());
         orders.setCheckoutTime(LocalDateTime.now());
         orders.setStatus(2);
@@ -109,14 +100,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
                 + (addressBook.getDistrictName() == null ? "" : addressBook.getDistrictName())
                 + (addressBook.getDetail() == null ? "" : addressBook.getDetail()));
         this.save(orders);
-
-
         //先明细表插入数据,多条数据
         orderDetailService.saveBatch(orderDetails);
-
         //清空购物车数据  queryWrapper封装了userId我们直接使用这个条件来进行删除就行
         shoppingCartService.remove(queryWrapper);
-
     }
 
     @Override
