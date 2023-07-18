@@ -36,7 +36,7 @@ public class DishFlavor implements Serializable {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
 
-    //是否删除
+    //是否删除 表示逻辑删除的标识字段，当记录被逻辑删除时，该字段的值会被设置为特定的值
     @TableLogic
     private Integer isDeleted;
 }
