@@ -31,8 +31,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         log.info("开始进行静态资源映射...");
         registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-        registry.addResourceHandler("/backend/**").addResourceLocations("classpath:/resources/backend/");
-        registry.addResourceHandler("/front/**").addResourceLocations("classpath:/resources/front/");
+        // 这个坑摔死我了，classpath后面直接加上前端文件夹路径即可
+        registry.addResourceHandler("/backend/**").addResourceLocations("classpath:/backend/");
+        registry.addResourceHandler("/front/**").addResourceLocations("classpath:/front/");
     }
 
     // 扩展mvc框架的消息转换器
