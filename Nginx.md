@@ -56,7 +56,7 @@ Nginx是一个开源的、高性能的HTTP服务器和反向代理服务器。Ng
 
 nginx 相对于tomcat 更加高效
 
-```
+```bash
     server {
         listen       80;
         server_name  localhost;
@@ -107,7 +107,7 @@ server{
 - 应用集群：把同一个应用部署到多台服务器上面，组成集群，接收负载均衡器分发的请求
 - 负载均衡器：把用户请求根据对应的负载均衡算法分发到应用集群中的一台服务器进行处理
 
-```
+```bash
 http {
     upstream backend { # 定义一组服务器
         # 使用轮询算法：以循环的方式询问下面服务器
