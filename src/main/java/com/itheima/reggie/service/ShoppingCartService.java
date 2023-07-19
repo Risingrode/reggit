@@ -6,4 +6,5 @@ import com.itheima.reggie.entity.ShoppingCart;
 public interface ShoppingCartService extends IService<ShoppingCart> {
 
     void clean();
+
 }

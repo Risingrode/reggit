@@ -2,9 +2,7 @@ package com.itheima.reggie.utils;
 
 import java.util.Random;
 
-/**
- * 随机生成验证码工具类
- */
+// 随机生成验证码工具类
 public class ValidateCodeUtils {
     //生成指定长度数字验证码
     public static Integer generateValidateCode(int length) {
@@ -25,13 +23,10 @@ public class ValidateCodeUtils {
         return code;
     }
 
-    //随机生成指定长度字符串验证码
-
     public static String generateValidateCode4String(int length) {
-        Random rdm = new Random(); // 创建随机数生成器对象
-        String hash1 = Integer.toHexString(rdm.nextInt()); // 生成一个随机整数，并将其转换为十六进制字符串
-        String capstr = hash1.substring(0, length); // 截取生成的随机字符串的前 length 个字符作为验证码
+        Random rdm = new Random();
+        String hash1 = Integer.toHexString(rdm.nextInt());
+        String capstr = hash1.substring(0, length);
         return capstr; // 返回生成的验证码
     }
-
 }

@@ -66,10 +66,9 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     // 根据套餐id修改售卖状态
     @Override
     public void updateSetmealStatusById(Integer status,  List<Long> ids) {
-        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(ids !=null,Setmeal::getId,ids);
         List<Setmeal> list = this.list(queryWrapper);
-
         for (Setmeal setmeal : list) {
             if (setmeal != null){
                 setmeal.setStatus(status);
@@ -83,9 +82,10 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     public SetmealDto getData(Long id) {
         Setmeal setmeal = this.getById(id);
         SetmealDto setmealDto = new SetmealDto();
-        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(id!=null,SetmealDish::getSetmealId,id);
         if (setmeal != null){
+            // 把套餐id复制给它
             BeanUtils.copyProperties(setmeal,setmealDto);
             List<SetmealDish> list = setmealDishService.list(queryWrapper);
             setmealDto.setSetmealDishes(list);

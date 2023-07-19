@@ -1,5 +1,6 @@
 server:
     port: 8080
+
 spring:
     application:
         # 应用的名称，选择性配置
@@ -10,8 +11,9 @@ spring:
             url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
             username: root
             password: 111111
+
     redis:
-        host: 127.0.0.1
+        host: localhost
         port: 6379
         #使用本地的windows不用密码也可以
         password: 123456
@@ -35,6 +37,7 @@ mybatis-plus:
     global-config:
         db-config:
             id-type: ASSIGN_ID
+
 # 设置用户上传文件的储存路径
 reggie:
     path: D:\\QQ\\项目\\IDEA项目\\
