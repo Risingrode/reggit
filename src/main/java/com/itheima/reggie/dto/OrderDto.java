@@ -10,7 +10,7 @@ import java.util.List;
 // 订单细节
 @Data
 public class OrderDto extends Orders  {
-
+   // 订单的分页信息
    private List<OrderDetail> orderDetails;
 
 }

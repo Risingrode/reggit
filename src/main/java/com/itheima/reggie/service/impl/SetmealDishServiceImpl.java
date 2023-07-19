@@ -7,11 +7,8 @@ import com.itheima.reggie.service.SetmealDishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * @author LJM
- * @create 2022/4/17
- */
-@Service
 @Slf4j
+@Service
 public class SetmealDishServiceImpl extends ServiceImpl<SetmealDishMapper, SetmealDish> implements SetmealDishService {
+
 }

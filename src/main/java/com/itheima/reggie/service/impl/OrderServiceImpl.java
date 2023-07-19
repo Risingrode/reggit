@@ -35,7 +35,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     private AddressBookService addressBookService;
 
     @Autowired
-    OrderDetailService orderDetailService;
+    private OrderDetailService orderDetailService;
 
     // 用户下单
     @Override
@@ -43,7 +43,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     public void submit(Orders orders) {
         //前端请求携带的参数是没有用户id的,所以要获取用户id
         Long userId = BaseContext.getCurrentId();
-        //创建查询条件
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId,userId);
         //查询当前用户的购物车数据
@@ -51,9 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         if (shoppingCarts == null || shoppingCarts.size()==0){
             throw new CustomException("购物车为空,不能下单");
         }
-        //查询用户数据
         User user = userService.getById(userId);
-        //查询用户地址
         Long addressBookId = orders.getAddressBookId();
         AddressBook addressBook = addressBookService.getById(addressBookId);
         if (addressBook==null){
@@ -62,13 +59,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         Long orderId = IdWorker.getId();//使用工具生成订单号
         orders.setId(orderId);
         //进行购物车的金额数据计算 顺便把订单明细给计算出来
-        AtomicInteger amount = new AtomicInteger(0);//使用原子类来保存计算的金额结果
-        //这个item是集合中的每一个shoppingCarts对象,是在变化的
+        AtomicInteger amount = new AtomicInteger(0);
         List<OrderDetail> orderDetails = shoppingCarts.stream().map((item)->{
-            //每对item进行一次遍历就产生一个新的orderDetail对象,然后对orderDetail进行设置,然后返回被收集,被封装成一个集合
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(orderId);
-            orderDetail.setNumber(item.getNumber());//获取和设置商品数量
+            orderDetail.setNumber(item.getNumber());
             orderDetail.setDishFlavor(item.getDishFlavor());
             orderDetail.setDishId(item.getDishId());
             orderDetail.setSetmealId(item.getSetmealId());
@@ -100,7 +95,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
                 + (addressBook.getDistrictName() == null ? "" : addressBook.getDistrictName())
                 + (addressBook.getDetail() == null ? "" : addressBook.getDetail()));
         this.save(orders);
-        //先明细表插入数据,多条数据
         orderDetailService.saveBatch(orderDetails);
         //清空购物车数据  queryWrapper封装了userId我们直接使用这个条件来进行删除就行
         shoppingCartService.remove(queryWrapper);
@@ -108,7 +102,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
 
     @Override
     public List<ShoppingCart> againAdd(List<OrderDetail> orderDetailList) {
-        //获取用户id
         Long userId = BaseContext.getCurrentId();
         List<ShoppingCart> shoppingCartList = orderDetailList.stream().map((item) -> {
             //把从order表中和order_details表中获取到的数据赋值给这个购物车对象

@@ -14,10 +14,8 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
 
     @Override
     public void clean() {
-        //sql:delete from shopping_cart where userId =？
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId, BaseContext.getCurrentId());
-        //如果直接注入ShoppingCartService是有可能报循环依赖的
         this.remove(queryWrapper);
     }
 }
