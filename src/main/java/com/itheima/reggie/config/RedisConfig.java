@@ -7,11 +7,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-/**
- * @author FCW
- * @create 2022/4/22
- */
-
+// @Configuration 注解用于标记一个类为配置类，告诉 Spring 容器该类是用于定义 Bean 的配置类。
 @Configuration
 public class RedisConfig extends CachingConfigurerSupport {
 

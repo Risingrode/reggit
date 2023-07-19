@@ -18,20 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author LJM
- * @create 2022/4/16
- */
-@Service
 @Slf4j
+@Service
 public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DishService {
 
     @Autowired
     private DishFlavorService dishFlavorService;
-    /**
-     * 新增菜品同时保存对应的口味数据
-     * @param dishDto
-     */
+
+    // 新增菜品同时保存对应的口味数据
     @Override
     @Transactional //涉及到对多张表的数据进行操作,需要加事务，需要事务生效,需要在启动类加上事务注解生效
     public void saveWithFlavor(DishDto dishDto) {
@@ -53,16 +47,11 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         dishFlavorService.saveBatch(dishDto.getFlavors()); //这个方法是批量保存
     }
 
-    /**
-     * 根据id来查询菜品信息和对应的口味信息
-     * @param id
-     * @return
-     */
+    // 根据id来查询菜品信息和对应的口味信息
     @Override
     public DishDto getByIdWithFlavor(Long id) {
         //查询菜品的基本信息  从dish表查询
         Dish dish = this.getById(id);
-
         //查询当前菜品对应的口味信息,从dish_flavor查询  条件查询
         LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DishFlavor::getDishId,dish.getId());
@@ -102,10 +91,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     }
 
-    /**
-     *套餐批量删除和单个删除
-     * @param ids
-     */
+    // 套餐批量删除和单个删除
     @Override
     @Transactional
     public void deleteByIds(List<Long> ids) {
@@ -125,8 +111,5 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
                 throw new CustomException("删除菜品中有正在售卖菜品,无法全部删除");
             }
         }
-
     }
-
-
 }
