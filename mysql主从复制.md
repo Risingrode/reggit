@@ -1,7 +1,7 @@
 # 主从复制
 
 ## 主从复制的原理
-主从复制主要用于备份和提高读取性能。在主从复制中，有一个主服务器（Master）和一个或多个从服务器（Slave）。
+> 主从复制主要用于备份和提高读取性能。在主从复制中，有一个主服务器（Master）和一个或多个从服务器（Slave）。
 
 1. **主服务器**：主服务器处理写操作（INSERT, UPDATE, DELETE等）。每当主服务器完成一个写操作，它都会在其二进制日志（Binary Log）中记录下这个操作。
 - 二进制日志是一个记录主服务器所有写操作的日志文件，每个事件（写操作）在二进制日志中都有一个唯一的位置。
@@ -16,7 +16,7 @@
 实现主从复制的步骤大致如下：
 
 1. 在主库上操作：
-   首先，你需要在主库中打开二进制日志（binary log），这是 MySQL 的一种日志文件，用于记录数据的修改情况。你可以在 MySQL 配置文件（如 `my.cnf` 或 `my.ini`）中添加或修改以下配置：
+   首先，你需要在主库中打开二进制日志（binary log），这是 MySQL 的一种日志文件，用于记录数据的修改情况。你可以在 MySQL 配置文件（如 `my.ini`）中添加或修改以下配置：
    ```bash
    [mysqld]
    log-bin=mysql-bin # 开启二进制日志
@@ -87,7 +87,7 @@ spring:
     masterslave:
       # 负载均衡算法
       load-balance-algorithm-type: round_robin # 轮询
-      # 最终数据库名称
+      # 最终数据库名称 这个库的名称主从数据库都要有
       name: dataSource
       master-data-source-name: ds0
       slave-data-source-names: ds1

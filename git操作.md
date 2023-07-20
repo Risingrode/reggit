@@ -34,57 +34,43 @@
 
 ## 然后才能直接使用下面命令 
 
- > git push
+1.  > git push
+2.  > git push origin master
+3.  > git pull origin master
+4.  > git commmit -m 'nihao'  <文件名>
 
+> 如果本地仓库不是从远程创建的，直接拉取会报错
 
--------------
-
- > git push origin master
-> 
- > git pull origin master
-> 
- > git commmit -m 'nihao'  <文件名>
-
-如果本地仓库不是从远程创建的，直接拉取会报错
-
-在git pull命令后面加上：--allow-unrelated-histories
+<span style="color: red;">在git pull命令后面加上：--allow-unrelated-histories</span>
 
 
 ## 分支操作
 
- > git branch <name>
-
- > git checkout <name>
-
- > git merge <name>
-
- > git checkout -b <name>
+* > git branch <name>
+* > git checkout <name>
+* > git merge <name>
+* > git checkout -b <name>
 
 ## 进入编辑模式
 - ：wq 保存退出
 - esc  直接退出
 - i    插入模式
+- :q! 不保存退出
 
 ## 分支冲突
 
-在b1分支下面修改b1.txt文件
-在master下面修改b1.txt文件
-
-再次进行合并时, 会发生冲突
-
-需要`手动处理`
-
-
+* 在b1分支下面修改b1.txt文件
+* 在master下面修改b1.txt文件
+* 再次进行合并时, 会发生冲突
+* 需要`手动处理`
 
 ## tag
 
-进行代码快照，记录当前状态。
+> 相当于进行代码快照，记录当前状态。
 
-git tag
-
-git tag v0.1
-
-git push origin v0.1
+* git tag
+* git tag v0.1
+* git push origin v0.1
 
 
 ## 在IDEA中实现git

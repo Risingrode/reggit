@@ -25,17 +25,18 @@ Nginx是一个开源的、高性能的HTTP服务器和反向代理服务器。Ng
 
 `tree`:树形目录
 
-- conf 配置文件
-- html 静态文件
-- logs 日志文件
-- sbin 脚本文件 用于启动停止nginx服务
+- `conf` 配置文件
+-` html` 静态文件
+- `logs` 日志文件
+- `sbin` 脚本文件 用于启动停止nginx服务
 
 ### 打开sbin目录
-- ./nginx -v  检查版本号
-- ./nginx -t  测试文件
-- ./nginx 启动nginx   不要忘记关闭防火墙 systemctl stop firewalld
-- ./nginx -s stop 关闭nginx服务
-- ./nginx -s reload 重新加载文件
+
+- `./nginx -v`: 检查版本号
+- `./nginx -t`: 测试文件
+- `./nginx`: 启动Nginx（不要忘记关闭防火墙 `systemctl stop firewalld`）
+- `./nginx -s stop`: 关闭Nginx服务
+- `./nginx -s reload`: 重新加载文件
 
 需要在`etc/profile`中加入nginx的环境变量，就不用像前面那样麻烦配置
 
@@ -56,13 +57,13 @@ Nginx是一个开源的、高性能的HTTP服务器和反向代理服务器。Ng
 
 nginx 相对于tomcat 更加高效
 
-```
+```bash
     server {
         listen       80;
         server_name  localhost;
         
         location / {
-            root   html;    # 目录
+            root   html;    # 识别一个叫做html的目录
             index  index.html index.htm; # 默认打开index.html文件
         }
 ```
@@ -91,23 +92,23 @@ nginx 相对于tomcat 更加高效
 需要2台服务器
 
 配置反向代理：
-```
+```bash
 server{
     listen 82;
     server_name localhost;
     location/{
-        rewrite ^/(.*)$ /$1 break;
+        rewrite ^/(.*)$ /$1 break; # 对请求进行重写，把斜杠后面的内容作为参数传递给后端
         proxy_pass http://192.168.138.101:8080; # 反向代理设置，把请求转发到指定服务
     }
 }
 ```
-- rewrite ^/(.*)$ /$1 break; 重写url，去掉前面的/，否则会报404错误
+- `rewrite ^/(.*)$ /$1 break;` 重写url，去掉前面的/，否则会报404错误
 ## 负载均衡
 
 - 应用集群：把同一个应用部署到多台服务器上面，组成集群，接收负载均衡器分发的请求
 - 负载均衡器：把用户请求根据对应的负载均衡算法分发到应用集群中的一台服务器进行处理
 
-```
+```bash
 http {
     upstream backend { # 定义一组服务器
         # 使用轮询算法：以循环的方式询问下面服务器
@@ -115,7 +116,6 @@ http {
         server backend1.example.com weight=10;
         server backend2.example.com weight=5;
     }
-
     server {
         listen 80;
         server_name localhost;
