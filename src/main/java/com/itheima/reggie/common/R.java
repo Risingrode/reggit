@@ -18,7 +18,7 @@ public class R<T> implements Serializable {
     //数据
     private T data;
     //动态数据
-    private Map map = new HashMap();
+    private Map map = new HashMap<>();
     //为什么使用static 声明方法
     //意味着该方法属于类级别，意味着无需创建类的实例就可以直接调用该方法。因此，static 方法可以在类的任何地方被调用，而不依赖于对象的创建。
 
