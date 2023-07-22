@@ -7,7 +7,7 @@ spring:
         # 你的QQ邮箱，这里为发件人，填自己的即可
         username: 3185087246@qq.com
         # 你的QQ邮箱授权码
-        password: olksvqfmmzsgdcjj
+        password:
 
     application:
         # 应用的名称，选择性配置
