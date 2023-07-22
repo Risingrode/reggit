@@ -24,7 +24,7 @@ public class CategoryController {
     // 新增套餐分类
     @PostMapping
     public R<String> save(@RequestBody Category category) {
-        log.info("{category}", category);
+        log.info("category:{}", category);
         categoryService.save(category);
         return R.success("新增分类成功!!!");
     }
@@ -44,7 +44,7 @@ public class CategoryController {
 
     // 根据id来删除分类的数据
     @DeleteMapping
-    public R<String> delete(@RequestParam("ids") Long id) { //注意这里前端传过来的数据是ids
+    public R<String> delete(@RequestParam("ids") Long id) { //注意这里前端传过来的数据名字是：ids
         // 这里的remove是自定义的
         categoryService.remove(id);
         return R.success("分类信息删除成功");
@@ -72,4 +72,5 @@ public class CategoryController {
         List<Category> list = categoryService.list(queryWrapper);
         return R.success(list);
     }
+
 }

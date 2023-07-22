@@ -31,13 +31,13 @@ public class DishController {
     private SetmealDishService setmealDishService;// 套餐菜品服务
 
     @Autowired
-    private SetmealService setmealService;// 菜品口味服务
+    private SetmealService setmealService;// 套餐  这个菜品是属于哪一个套餐
 
     @Autowired
-    private DishFlavorService dishFlavorService;// 喜爱菜品
+    private DishFlavorService dishFlavorService;// 菜品口味 微辣 中辣 重辣
 
     @Autowired
-    private CategoryService categoryService;// 分类
+    private CategoryService categoryService;// 分类  川菜 粤菜 饮品
 
     @Autowired
     private RedisTemplate redisTemplate;// redis模板
@@ -52,7 +52,7 @@ public class DishController {
         return R.success("新增菜品成功");
     }
 
-    // 菜品信息分页查询
+    // 菜品信息查询
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize, String name) {
         // 第几页 每一页多少个
@@ -64,7 +64,7 @@ public class DishController {
         queryWrapper.orderByDesc(Dish::getUpdateTime);
         // 去数据库进行分页查询  参数分别是：分页对象 + 查询条件构造器
         dishService.page(dishPage, queryWrapper);
-        // 获取当前页的记录列表。
+        // 获取当前页的记录列表
         List<Dish> records = dishPage.getRecords();
         // 对每一个元素进行转化
         List<DishDto> list = records.stream().map((item) -> {

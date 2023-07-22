@@ -23,7 +23,7 @@ public class SetmealDish implements Serializable {
     //菜品id
     private Long dishId;
 
-    //菜品名称 （冗余字段）
+    //菜品名称
     private String name;
 
     //菜品原价

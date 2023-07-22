@@ -20,7 +20,7 @@ spring:
             password: 111111
 
     redis:
-        host: localhost
+        host: 127.0.0.1
         port: 6379
         #使用本地的windows不用密码也可以
         password: 123456
@@ -40,11 +40,12 @@ mybatis-plus:
     configuration:
         # 在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
         map-underscore-to-camel-case: true
-        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+        # 打印sql语句
+        # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     global-config:
         db-config:
             id-type: ASSIGN_ID
 
 # 设置用户上传文件的储存路径
 reggie:
-    path: D:\\QQ\\项目\\IDEA项目\\
+    path: D:\\QQ\\项目\\IDEA项目\\src\\main\\resources\\front\\images
