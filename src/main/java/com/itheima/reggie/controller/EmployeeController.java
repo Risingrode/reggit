@@ -33,6 +33,7 @@ public class EmployeeController {
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Employee::getUsername, employee.getUsername());
         Employee emp = employeeService.getOne(queryWrapper);
+
         if (emp == null) {
             return R.error("用户不存在");
         }
@@ -59,6 +60,7 @@ public class EmployeeController {
     public R<String> save(HttpServletRequest request, @RequestBody Employee employee) {
         // 对新增的员工设置初始化密码123456
         // 为什么把密码转化成字节流？ MD5通常接受字节数组作为输入进行计算
+        // System.out.println("后端输出测试"+employee);
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
         employeeService.save(employee);
         return R.success("新增员工成功");
@@ -71,7 +73,6 @@ public class EmployeeController {
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name);
         queryWrapper.orderByDesc(Employee::getUpdateTime);
-        // 调用下面方法，查询结果会被填充到 pageInfo 对象中。
         employeeService.page(pageInfo, queryWrapper);
         return R.success(pageInfo);
     }
@@ -87,6 +88,7 @@ public class EmployeeController {
     }
 
     // 根据id查询员工
+    // 这个没用
     @GetMapping("/{id}")
     public R<Employee> getById(@PathVariable Long id) {
         Employee employee = employeeService.getById(id);

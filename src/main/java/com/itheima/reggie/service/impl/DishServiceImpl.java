@@ -59,7 +59,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         this.updateById(dishDto);
         //更新口味信息，先清理再重新插入口味信息
         //清理当前菜品对应口味数据---dish_flavor表的delete操作
-        LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<DishFlavor> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DishFlavor::getDishId,dishDto.getId());
         dishFlavorService.remove(queryWrapper);
         //添加当前提交过来的口味数据---dish_flavor表的insert操作
@@ -67,6 +67,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             item.setDishId(dishDto.getId());
             return item;
         }).collect(Collectors.toList());
+        // 再把数据库里面的口味数据更新一下
         dishFlavorService.saveBatch(flavors);
     }
 
