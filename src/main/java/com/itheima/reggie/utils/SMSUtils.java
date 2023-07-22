@@ -10,7 +10,7 @@ import com.aliyuncs.profile.DefaultProfile;
 // 短信发送工具类
 public class SMSUtils {
     public static void sendMessage(String signName, String templateCode, String phoneNumbers, String param) {
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI5tRLzXXVU2xg1Kkcoeuc", "gqa6iv1QUBW5t04P7aiT8DfK6ljPw6"); // 创建默认的阿里云配置文件
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "", ""); // 创建默认的阿里云配置文件
         IAcsClient client = new DefaultAcsClient(profile); // 创建阿里云短信发送客户端
         SendSmsRequest request = new SendSmsRequest(); // 创建发送短信请求对象
         request.setSysRegionId("cn-hangzhou"); // 设置请求的区域ID，这里使用的是杭州区域
